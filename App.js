@@ -1,10 +1,53 @@
 import React, { useState } from "react";
-import { View, FlatList, Text, TouchableOpacity, Alert } from "react-native";
-import { Provider as PaperProvider, TextInput as PaperInput, Dialog, Portal, Button } from "react-native-paper";
+import { View, FlatList, Text, TouchableOpacity, Alert, TextInput, StyleSheet } from "react-native";
+import { Provider as PaperProvider, Button, Dialog, Portal, TextInput as PaperInput } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+// Login Screen
+const LoginScreen = ({ navigation }) => {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+
+  // Hardcoded admin credentials
+  const ADMIN_USERNAME = 'admin';
+  const ADMIN_PASSWORD = 'admin123';
+
+  const handleLogin = () => {
+    if (username === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+      navigation.navigate('Home');
+    } else {
+      setErrorMessage('Invalid username or password');
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.title}>Admin</Text>
+      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
+      <PaperInput
+        label="Username"
+        value={username}
+        onChangeText={setUsername}
+        style={styles.input}
+      />
+      <PaperInput
+        label="Password"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        style={styles.input}
+      />
+      <Button mode="contained" onPress={handleLogin} style={styles.button}>
+        Log In
+      </Button>
+    </SafeAreaView>
+  );
+};
+
+// Home Screen
 const HomeScreen = ({ navigation }) => {
   const [students, setStudents] = useState([]);
   const [isDialogVisible, setDialogVisible] = useState(false);
@@ -146,13 +189,40 @@ const HomeScreen = ({ navigation }) => {
   );
 };
 
+// Styles
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 20,
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    textAlign: 'center',
+  },
+  input: {
+    marginBottom: 10,
+  },
+  button: {
+    marginTop: 20,
+  },
+});
+
 const Stack = createStackNavigator();
 
 export default function App() {
   return (
     <PaperProvider>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Home">
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={LoginScreen} />
           <Stack.Screen name="Home" component={HomeScreen} />
         </Stack.Navigator>
       </NavigationContainer>
